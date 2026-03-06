@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Concurseiro Pro - v2</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #10b981;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        aside {
+            width: 280px;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-right: 1px solid #334155;
+        }
+
+        .avatar {
+            width: 60px; height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1.5rem;
+        }
+
+        /* Main Content */
+        main { flex: 1; padding: 2rem; max-width: 1100px; margin: 0 auto; }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        /* Timer */
+        #timer { font-size: 4.5rem; font-weight: 800; text-align: center; margin: 10px 0; }
+        
+        .btn-group { display: flex; gap: 8px; justify-content: center; }
+        button { 
+            padding: 10px 18px; border: none; border-radius: 6px; 
+            cursor: pointer; font-weight: 600; transition: 0.2s;
+        }
+        .btn-start { background: var(--primary); color: white; }
+        .btn-config { background: #475569; color: white; position: absolute; top: 15px; right: 15px; }
+
+        /* Modal Settings */
+        .modal {
+            display: none;
+            position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: var(--card-bg); padding: 2rem; border-radius: 12px; width: 300px;
+        }
+        .modal-content input {
+            width: 100%; padding: 8px; margin: 10px 0; border-radius: 4px; border: 1px solid #475569;
+            background: #0f172a; color: white;
+        }
+
+        /* Editable Areas */
+        [contenteditable="true"]:focus { outline: 1px solid var(--primary); background: rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body>
+
+    <div id="configModal" class="modal">
+        <div class="modal-content">
+            <h3>Configurar Ciclos</h3>
+            <label>Tempo Foco (min):</label>
+            <input type="number" id="inputFoco" value="25">
+            <label>Tempo Pausa (min):</label>
+            <input type="number" id="inputPausa" value="5">
+            <button class="btn-start" style="width: 100%" onclick="saveSettings()">Salvar e Resetar</button>
+            <button onclick="closeModal()" style="background:none; color: gray; width: 100%; margin-top: 10px;">Cancelar</button>
+        </div>
+    </div>
+
+    <aside>
+        <div class="avatar">EST</div>
+        <h3 contenteditable="true" id="userName" oninput="saveData()">Seu Nome</h3>
+        <p style="color: var(--accent)" contenteditable="true" id="userGoal" oninput="saveData()">Foco: Nome do Concurso</p>
+        <hr style="border: 0.5px solid #334155; margin: 20px 0;">
+        <h4>Matérias</h4>
+        <div id="subjects" contenteditable="true" oninput="saveData()">
+            • Direito Const.<br>• Português<br>• RLM
+        </div>
+    </aside>
+
+    <main>
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <h2 contenteditable="true" id="concursoAlvo" oninput="saveData()">Meu Próximo Concurso</h2>
+        </div>
+
+        <div class="grid-container">
+            <div class="card">
+                <button class="btn-config" onclick="openModal()">⚙️</button>
+                <h3 id="timerLabel">Foco</h3>
+                <div id="timer">25:00</div>
+                <div class="btn-group">
+                    <button class="btn-start" id="startBtn" onclick="toggleTimer()">Iniciar</button>
+                    <button style="background: #ef4444; color: white;" onclick="resetTimer()">Resetar</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Anotações Rápidas</h3>
+                <textarea id="notes" oninput="saveData()" style="width: 100%; height: 150px; background: #0f172a; color: white; border: 0; border-radius: 8px; padding: 10px; resize: none;"></textarea>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let timerId = null;
+        let isRunning = false;
+        let isFocus = true;
+        let timeLeft = 25 * 60;
+
+        // Elementos
+        const timerDisplay = document.getElementById('timer');
+        const timerLabel = document.getElementById('timerLabel');
+        const startBtn = document.getElementById('startBtn');
+
+        // Funções do Modal
+        function openModal() { document.getElementById('configModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('configModal').style.display = 'none'; }
+
+        function saveSettings() {
+            const minFoco = document.getElementById('inputFoco').value;
+            localStorage.setItem('prefFoco', minFoco);
+            localStorage.setItem('prefPausa', document.getElementById('inputPausa').value);
+            resetTimer();
+            closeModal();
+        }
+
+        // Timer Logic
+        function toggleTimer() {
+            if (isRunning) {
+                clearInterval(timerId);
+                startBtn.textContent = "Continuar";
+            } else {
+                timerId = setInterval(countdown, 1000);
+                startBtn.textContent = "Pausar";
+            }
+            isRunning = !isRunning;
+        }
+
+        function countdown() {
+            if (timeLeft <= 0) {
+                clearInterval(timerId);
+                isRunning = false;
+                alert(isFocus ? "Hora da Pausa!" : "Hora de Focar!");
+                isFocus = !isFocus;
+                resetTimer();
+                return;
+            }
+            timeLeft--;
+            updateDisplay();
+        }
+
+        function resetTimer() {
+            clearInterval(timerId);
+            isRunning = false;
+            startBtn.textContent = "Iniciar";
+            const min = isFocus ? (localStorage.getItem('prefFoco') || 25) : (localStorage.getItem('prefPausa') || 5);
+            timeLeft = min * 60;
+            timerLabel.textContent = isFocus ? "Foco" : "Pausa";
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            let m = Math.floor(timeLeft / 60);
+            let s = timeLeft % 60;
+            timerDisplay.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        // Persistência LocalStorage
+        function saveData() {
+            const data = {
+                name: document.getElementById('userName').innerText,
+                goal: document.getElementById('userGoal').innerText,
+                concurso: document.getElementById('concursoAlvo').innerText,
+                subjects: document.getElementById('subjects').innerHTML,
+                notes: document.getElementById('notes').value
+            };
+            localStorage.setItem('estudosData', JSON.stringify(data));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('estudosData');
+            if (saved) {
+                const d = JSON.parse(saved);
+                document.getElementById('userName').innerText = d.name;
+                document.getElementById('userGoal').innerText = d.goal;
+                document.getElementById('concursoAlvo').innerText = d.concurso;
+                document.getElementById('subjects').innerHTML = d.subjects;
+                document.getElementById('notes').value = d.notes;
+            }
+            resetTimer();
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>
