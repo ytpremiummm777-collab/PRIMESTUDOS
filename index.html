@@ -3,226 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Concurseiro Pro - v2</title>
+    <title>Painel do Concurseiro Ultra</title>
     <style>
         :root {
-            --primary: #6366f1;
+            --primary: #818cf8;
             --bg-dark: #0f172a;
-            --card-bg: #1e293b;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
             --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --accent: #10b981;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg-dark);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at top left, #1e1b4b, #0f172a);
             color: var(--text-main);
             margin: 0;
-            display: flex;
+            padding: 20px;
             min-height: 100vh;
         }
 
-        /* Sidebar */
-        aside {
-            width: 280px;
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* Header Estilizado */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
             background: var(--card-bg);
-            padding: 2rem;
-            border-right: 1px solid #334155;
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .avatar {
-            width: 60px; height: 60px;
+        .cargo-badge {
             background: var(--primary);
-            border-radius: 50%;
-            margin: 0 auto 1rem;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 1.5rem;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
         }
 
-        /* Main Content */
-        main { flex: 1; padding: 2rem; max-width: 1100px; margin: 0 auto; }
-
-        .grid-container {
+        /* Grid Principal */
+        .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.5rem;
+            gap: 20px;
         }
 
         .card {
             background: var(--card-bg);
-            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Simulado e Questões */
+        .stats-group { display: flex; gap: 15px; margin-top: 15px; }
+        .stat-box {
+            flex: 1;
+            padding: 15px;
             border-radius: 12px;
-            position: relative;
+            text-align: center;
+            background: rgba(0,0,0,0.2);
         }
 
-        /* Timer */
-        #timer { font-size: 4.5rem; font-weight: 800; text-align: center; margin: 10px 0; }
-        
-        .btn-group { display: flex; gap: 8px; justify-content: center; }
-        button { 
-            padding: 10px 18px; border: none; border-radius: 6px; 
-            cursor: pointer; font-weight: 600; transition: 0.2s;
-        }
-        .btn-start { background: var(--primary); color: white; }
-        .btn-config { background: #475569; color: white; position: absolute; top: 15px; right: 15px; }
-
-        /* Modal Settings */
-        .modal {
-            display: none;
-            position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); align-items: center; justify-content: center;
-        }
-        .modal-content {
-            background: var(--card-bg); padding: 2rem; border-radius: 12px; width: 300px;
-        }
-        .modal-content input {
-            width: 100%; padding: 8px; margin: 10px 0; border-radius: 4px; border: 1px solid #475569;
-            background: #0f172a; color: white;
+        input, select, textarea {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #334155;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            width: 100%;
+            margin-top: 5px;
         }
 
-        /* Editable Areas */
-        [contenteditable="true"]:focus { outline: 1px solid var(--primary); background: rgba(255,255,255,0.05); }
+        /* Pomodoro Minimalista */
+        #timer {
+            font-size: 5rem;
+            font-weight: 900;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            background: linear-gradient(to bottom, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-primary { background: var(--primary); color: white; width: 100%; }
+
+        .progress-bar {
+            height: 10px;
+            background: #334155;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        #progress-fill { height: 100%; background: var(--accent-green); width: 0%; transition: 1s; }
+
     </style>
 </head>
 <body>
 
-    <div id="configModal" class="modal">
-        <div class="modal-content">
-            <h3>Configurar Ciclos</h3>
-            <label>Tempo Foco (min):</label>
-            <input type="number" id="inputFoco" value="25">
-            <label>Tempo Pausa (min):</label>
-            <input type="number" id="inputPausa" value="5">
-            <button class="btn-start" style="width: 100%" onclick="saveSettings()">Salvar e Resetar</button>
-            <button onclick="closeModal()" style="background:none; color: gray; width: 100%; margin-top: 10px;">Cancelar</button>
+<div class="container">
+    <header>
+        <div>
+            <h1 style="margin:0; font-size: 1.5rem;">Foco Total ⚡</h1>
+            <span id="displayCargo" class="cargo-badge" onclick="editCargo()">Definir Cargo</span>
         </div>
-    </div>
-
-    <aside>
-        <div class="avatar">EST</div>
-        <h3 contenteditable="true" id="userName" oninput="saveData()">Seu Nome</h3>
-        <p style="color: var(--accent)" contenteditable="true" id="userGoal" oninput="saveData()">Foco: Nome do Concurso</p>
-        <hr style="border: 0.5px solid #334155; margin: 20px 0;">
-        <h4>Matérias</h4>
-        <div id="subjects" contenteditable="true" oninput="saveData()">
-            • Direito Const.<br>• Português<br>• RLM
+        <div style="text-align: right;">
+            <div id="data-atual"></div>
         </div>
-    </aside>
+    </header>
 
-    <main>
-        <div class="card" style="margin-bottom: 1.5rem;">
-            <h2 contenteditable="true" id="concursoAlvo" oninput="saveData()">Meu Próximo Concurso</h2>
+    <div class="grid">
+        <div class="card">
+            <h3 style="margin-top:0">Pomodoro</h3>
+            <div id="timer">25:00</div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-primary" id="btnStart" onclick="toggleTimer()">Iniciar</button>
+                <button class="btn" style="background:#475569; color:white;" onclick="resetTimer()">Reset</button>
+            </div>
+            <select id="tempoConfig" onchange="updateTempoPreset()" style="margin-top:15px">
+                <option value="25">Foco (25 min)</option>
+                <option value="50">Foco Profundo (50 min)</option>
+                <option value="5">Pausa Curta (5 min)</option>
+            </select>
         </div>
 
-        <div class="grid-container">
-            <div class="card">
-                <button class="btn-config" onclick="openModal()">⚙️</button>
-                <h3 id="timerLabel">Foco</h3>
-                <div id="timer">25:00</div>
-                <div class="btn-group">
-                    <button class="btn-start" id="startBtn" onclick="toggleTimer()">Iniciar</button>
-                    <button style="background: #ef4444; color: white;" onclick="resetTimer()">Resetar</button>
+        <div class="card">
+            <h3 style="margin-top:0">Desempenho em Questões</h3>
+            <label>Banca Examinadora:</label>
+            <select id="bancaSelect" onchange="saveData()">
+                <option>Cebraspe</option>
+                <option>FGV</option>
+                <option>FCC</option>
+                <option>Vunesp</option>
+            </select>
+            
+            <div class="stats-group">
+                <div class="stat-box" style="border-bottom: 3px solid var(--accent-green)">
+                    <small>Acertos</small>
+                    <div id="acertos" contenteditable="true" oninput="calcPercent()">0</div>
+                </div>
+                <div class="stat-box" style="border-bottom: 3px solid var(--accent-red)">
+                    <small>Erros</small>
+                    <div id="erros" contenteditable="true" oninput="calcPercent()">0</div>
+                </div>
+                <div class="stat-box" style="border-bottom: 3px solid var(--primary)">
+                    <small>% Aproveitamento</small>
+                    <div id="percent">0%</div>
                 </div>
             </div>
-
-            <div class="card">
-                <h3>Anotações Rápidas</h3>
-                <textarea id="notes" oninput="saveData()" style="width: 100%; height: 150px; background: #0f172a; color: white; border: 0; border-radius: 8px; padding: 10px; resize: none;"></textarea>
-            </div>
+            <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 10px;">Dica: Analise o erro para não repetir o padrão.</p>
         </div>
-    </main>
 
-    <script>
-        let timerId = null;
-        let isRunning = false;
-        let isFocus = true;
-        let timeLeft = 25 * 60;
+        <div class="card">
+            <h3 style="margin-top:0">Meta do Dia</h3>
+            <div class="progress-bar"><div id="progress-fill"></div></div>
+            <textarea id="metas" placeholder="1. Revisar Contratos&#10;2. 40 questões de RLM..." oninput="saveData()"></textarea>
+        </div>
+    </div>
+</div>
 
-        // Elementos
-        const timerDisplay = document.getElementById('timer');
-        const timerLabel = document.getElementById('timerLabel');
-        const startBtn = document.getElementById('startBtn');
+<script>
+    let timer;
+    let timeLeft = 25 * 60;
+    let isRunning = false;
 
-        // Funções do Modal
-        function openModal() { document.getElementById('configModal').style.display = 'flex'; }
-        function closeModal() { document.getElementById('configModal').style.display = 'none'; }
+    // Inicialização
+    window.onload = () => {
+        document.getElementById('data-atual').textContent = new Date().toLocaleDateString('pt-BR', {weekday: 'long', day: 'numeric', month: 'long'});
+        loadData();
+    };
 
-        function saveSettings() {
-            const minFoco = document.getElementById('inputFoco').value;
-            localStorage.setItem('prefFoco', minFoco);
-            localStorage.setItem('prefPausa', document.getElementById('inputPausa').value);
-            resetTimer();
-            closeModal();
+    function toggleTimer() {
+        const btn = document.getElementById('btnStart');
+        if (isRunning) {
+            clearInterval(timer);
+            btn.textContent = "Continuar";
+            btn.style.background = "var(--primary)";
+        } else {
+            timer = setInterval(updateTimer, 1000);
+            btn.textContent = "Pausar";
+            btn.style.background = "#f59e0b";
         }
+        isRunning = !isRunning;
+    }
 
-        // Timer Logic
-        function toggleTimer() {
-            if (isRunning) {
-                clearInterval(timerId);
-                startBtn.textContent = "Continuar";
-            } else {
-                timerId = setInterval(countdown, 1000);
-                startBtn.textContent = "Pausar";
-            }
-            isRunning = !isRunning;
+    function updateTimer() {
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            alert("Tempo esgotado!");
+            return;
         }
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer').textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
 
-        function countdown() {
-            if (timeLeft <= 0) {
-                clearInterval(timerId);
-                isRunning = false;
-                alert(isFocus ? "Hora da Pausa!" : "Hora de Focar!");
-                isFocus = !isFocus;
-                resetTimer();
-                return;
-            }
-            timeLeft--;
-            updateDisplay();
+    function resetTimer() {
+        clearInterval(timer);
+        isRunning = false;
+        timeLeft = document.getElementById('tempoConfig').value * 60;
+        document.getElementById('timer').textContent = `${document.getElementById('tempoConfig').value}:00`;
+        document.getElementById('btnStart').textContent = "Iniciar";
+    }
+
+    function updateTempoPreset() {
+        resetTimer();
+    }
+
+    function editCargo() {
+        const novoCargo = prompt("Para qual cargo você está estudando?");
+        if(novoCargo) {
+            document.getElementById('displayCargo').textContent = novoCargo;
+            saveData();
         }
+    }
 
-        function resetTimer() {
-            clearInterval(timerId);
-            isRunning = false;
-            startBtn.textContent = "Iniciar";
-            const min = isFocus ? (localStorage.getItem('prefFoco') || 25) : (localStorage.getItem('prefPausa') || 5);
-            timeLeft = min * 60;
-            timerLabel.textContent = isFocus ? "Foco" : "Pausa";
-            updateDisplay();
+    function calcPercent() {
+        const a = parseInt(document.getElementById('acertos').textContent) || 0;
+        const e = parseInt(document.getElementById('erros').textContent) || 0;
+        const total = a + e;
+        const p = total > 0 ? Math.round((a / total) * 100) : 0;
+        document.getElementById('percent').textContent = p + "%";
+        document.getElementById('progress-fill').style.width = p + "%";
+        saveData();
+    }
+
+    function saveData() {
+        const data = {
+            cargo: document.getElementById('displayCargo').textContent,
+            acertos: document.getElementById('acertos').textContent,
+            erros: document.getElementById('erros').textContent,
+            metas: document.getElementById('metas').value,
+            banca: document.getElementById('bancaSelect').value
+        };
+        localStorage.setItem('concurseiro_pro_v3', JSON.stringify(data));
+    }
+
+    function loadData() {
+        const saved = JSON.parse(localStorage.getItem('concurseiro_pro_v3'));
+        if (saved) {
+            document.getElementById('displayCargo').textContent = saved.cargo;
+            document.getElementById('acertos').textContent = saved.acertos;
+            document.getElementById('erros').textContent = saved.erros;
+            document.getElementById('metas').value = saved.metas;
+            document.getElementById('bancaSelect').value = saved.banca;
+            calcPercent();
         }
+    }
+</script>
 
-        function updateDisplay() {
-            let m = Math.floor(timeLeft / 60);
-            let s = timeLeft % 60;
-            timerDisplay.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
-
-        // Persistência LocalStorage
-        function saveData() {
-            const data = {
-                name: document.getElementById('userName').innerText,
-                goal: document.getElementById('userGoal').innerText,
-                concurso: document.getElementById('concursoAlvo').innerText,
-                subjects: document.getElementById('subjects').innerHTML,
-                notes: document.getElementById('notes').value
-            };
-            localStorage.setItem('estudosData', JSON.stringify(data));
-        }
-
-        function loadData() {
-            const saved = localStorage.getItem('estudosData');
-            if (saved) {
-                const d = JSON.parse(saved);
-                document.getElementById('userName').innerText = d.name;
-                document.getElementById('userGoal').innerText = d.goal;
-                document.getElementById('concursoAlvo').innerText = d.concurso;
-                document.getElementById('subjects').innerHTML = d.subjects;
-                document.getElementById('notes').value = d.notes;
-            }
-            resetTimer();
-        }
-
-        window.onload = loadData;
-    </script>
 </body>
 </html>
