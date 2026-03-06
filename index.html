@@ -3,171 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Aprovação Pro - Plataforma de Estudos</title>
+    <title>Plataforma P★ - Aprovação Pro</title>
     
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3534/3534139.png">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/ios-filled/512/FF0000/p.png"> 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="AprovaçãoPro">
 
     <style>
         :root {
-            --primary: #2563eb;
-            --secondary: #0f172a;
-            --accent: #f59e0b;
-            --success: #10b981;
-            --danger: #ef4444;
-            --bg: #f1f5f9;
-            --text: #1e293b;
+            --primary-red: #ff3b30;
+            --bg-deep: #0a0a0c;
+            --card-glass: rgba(28, 28, 30, 0.8);
+            --text-gold: #f5f5f7;
+            --accent-blue: #007aff;
+            --success-green: #34c759;
         }
 
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            margin: 0; 
-            padding-bottom: 80px; /* Espaço para o timer fixo */
-        }
-        
-        /* Navegação Superior Estilo App */
-        nav { 
-            background: var(--secondary); 
-            color: white; 
-            padding: 1.2rem; 
-            display: flex; 
-            flex-direction: column;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        body {
+            font-family: -apple-system, system-ui, sans-serif;
+            background-color: var(--bg-deep);
+            background-image: radial-gradient(circle at 50% -20%, #1c1c1e 0%, #0a0a0c 100%);
+            color: var(--text-gold);
+            margin: 0;
+            min-height: 100vh;
+            padding-bottom: 100px;
         }
 
-        .logo { font-weight: 800; font-size: 1.3rem; letter-spacing: -1px; margin-bottom: 5px; }
+        /* Header Sophisticated */
+        header {
+            padding: 40px 20px 20px;
+            text-align: center;
+        }
 
-        .container { max-width: 800px; margin: 0 auto; padding: 1.5rem; }
+        .logo-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
 
-        /* Telas */
-        .page { display: none; animation: fadeIn 0.3s ease; }
+        .logo-star {
+            position: absolute;
+            top: -15px;
+            right: -5px;
+            color: white;
+            font-size: 24px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
+        }
+
+        .logo-p {
+            font-size: 60px;
+            font-weight: 900;
+            color: var(--primary-red);
+            line-height: 1;
+        }
+
+        /* Container & Navigation */
+        .container { max-width: 600px; margin: 0 auto; padding: 0 20px; }
+
+        .page { display: none; animation: slideUp 0.4s ease-out; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Cards de Seleção */
-        .grid-cargos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card-cargo { 
-            background: white; border-radius: 16px; padding: 1.5rem; 
-            text-align: center; cursor: pointer; border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        }
-        .card-cargo h3 { margin: 10px 0 5px; font-size: 1rem; }
-        .card-cargo p { font-size: 0.75rem; color: #64748b; margin: 0; }
-
-        /* Lista de Matérias */
-        .subject-item {
-            background: white; margin-bottom: 12px; padding: 1.2rem; border-radius: 12px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Questões */
-        .questoes-box { 
-            background: white; padding: 1.5rem; border-radius: 20px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        /* Sophisticated Cards */
+        .card-selection {
+            background: var(--card-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        .banca-tag { background: #fee2e2; color: #b91c1c; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
-        
-        .btn { 
-            padding: 12px 24px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer;
-            width: 100%; margin-top: 10px; font-size: 1rem;
-        }
-        .btn-check { background: var(--success); color: white; }
-        .btn-wrong { background: var(--danger); color: white; }
 
-        /* Timer Flutuante */
-        .timer-bar {
-            position: fixed; bottom: 0; width: 100%; background: var(--secondary);
-            color: white; padding: 15px 0; display: flex; justify-content: space-around;
-            align-items: center; border-radius: 20px 20px 0 0;
+        .card-selection:active { transform: scale(0.97); background: rgba(255,255,255,0.1); }
+
+        /* Questões UI */
+        .question-box {
+            background: var(--card-glass);
+            padding: 30px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        #display-time { font-family: 'Courier New', monospace; font-size: 1.5rem; font-weight: bold; }
+
+        .banca-badge {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-blue);
+            font-weight: 700;
+        }
+
+        .btn-option {
+            width: 100%;
+            padding: 18px;
+            margin-top: 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        /* Comentário e Gabarito */
+        .feedback {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 16px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .correct { background: rgba(52, 199, 89, 0.2); border: 1px solid var(--success-green); }
+        .wrong { background: rgba(255, 59, 48, 0.2); border: 1px solid var(--primary-red); }
+
+        /* Floating Pomodoro */
+        .pomodoro-dock {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(28, 28, 30, 0.95);
+            padding: 12px 30px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .timer-text { font-family: 'SF Mono', monospace; font-size: 20px; font-weight: bold; }
+
     </style>
 </head>
 <body>
 
-<nav>
-    <div class="logo" onclick="showPage('page-cargos')">🛡️ APROVAÇÃO PRO</div>
-    <div id="stats-nav" style="font-size: 0.8rem; opacity: 0.8;">Carregando desempenho...</div>
-</nav>
+<header>
+    <div class="logo-container">
+        <span class="logo-star">★</span>
+        <span class="logo-p">P</span>
+    </div>
+    <div id="welcome-text" style="font-size: 12px; opacity: 0.5; text-transform: uppercase; letter-spacing: 2px;">Elite de Estudos</div>
+</header>
 
 <div class="container">
-    
+
     <div id="page-cargos" class="page active">
-        <h2 style="font-size: 1.2rem;">Escolha sua carreira:</h2>
-        <div class="grid-cargos">
-            <div class="card-cargo" onclick="selectCargo('Policial', ['Português', 'Direito Penal', 'Informática'])">
-                <span style="font-size: 2rem;">👮</span>
-                <h3>Policial</h3>
-                <p>PF, PRF, Civil</p>
-            </div>
-            <div class="card-cargo" onclick="selectCargo('Administrativo', ['Português', 'Direito Admin.', 'RLM'])">
-                <span style="font-size: 2rem;">📂</span>
-                <h3>Adm.</h3>
-                <p>Inss, Prefeituras</p>
-            </div>
-            <div class="card-cargo" onclick="selectCargo('Tribunais', ['Constitucional', 'Português', 'Civil'])">
-                <span style="font-size: 2rem;">⚖️</span>
-                <h3>Tribunais</h3>
-                <p>TJ, TRT, TRE</p>
-            </div>
-            <div class="card-cargo" onclick="selectCargo('Fiscal', ['Contabilidade', 'Tributário', 'RLM'])">
-                <span style="font-size: 2rem;">💰</span>
-                <h3>Fiscal</h3>
-                <p>Receita, Sefaz</p>
-            </div>
+        <h2 style="font-weight: 700; margin-bottom: 30px;">Qual sua meta?</h2>
+        <div class="card-selection" onclick="loadMaterias('Magistratura / Jurídica')">
+            <h3 style="margin:0">Carreira Jurídica</h3>
+            <p style="margin:5px 0 0; opacity:0.5; font-size:14px">Juiz, Promotor, Defensor</p>
+        </div>
+        <div class="card-selection" onclick="loadMaterias('Segurança Pública')">
+            <h3 style="margin:0">Segurança Pública</h3>
+            <p style="margin:5px 0 0; opacity:0.5; font-size:14px">Delegado, Agente, Perito</p>
+        </div>
+        <div class="card-selection" onclick="loadMaterias('Gestão e Fiscal')">
+            <h3 style="margin:0">Gestão e Fiscal</h3>
+            <p style="margin:5px 0 0; opacity:0.5; font-size:14px">Auditor, Analista, Receita</p>
         </div>
     </div>
 
     <div id="page-materias" class="page">
-        <h2 id="titulo-cargo" style="font-size: 1.2rem;">Matérias</h2>
+        <div id="cargo-title" style="margin-bottom: 25px; color: var(--accent-blue); font-weight: bold;"></div>
         <div id="lista-materias"></div>
-        <button class="btn" style="background: #e2e8f0; color: #475569;" onclick="showPage('page-cargos')">Voltar ao Início</button>
+        <button onclick="showPage('page-cargos')" style="background:none; border:none; color:white; opacity:0.5; margin-top:20px; cursor:pointer">← Voltar para áreas</button>
     </div>
 
-    <div id="page-estudo" class="page">
-        <div class="questoes-box">
-            <span class="banca-tag" id="banca-label">BANCA CEBRASPE</span>
-            <p id="pergunta" style="font-weight: 500; line-height: 1.5; margin: 15px 0;">Carregando questão...</p>
-            <button class="btn btn-check" onclick="answer(true)">CORRETO</button>
-            <button class="btn btn-wrong" onclick="answer(false)">ERRADO</button>
+    <div id="page-questoes" class="page">
+        <div class="question-box">
+            <div id="meta-info" class="banca-badge">CARREGANDO...</div>
+            <p id="enunciado" style="font-size: 18px; font-weight: 500; margin: 20px 0;"></p>
+            
+            <button class="btn-option" onclick="checkAnswer(true)">Certo</button>
+            <button class="btn-option" onclick="checkAnswer(false)">Errado</button>
+
+            <div id="feedback-area" class="feedback">
+                <strong id="result-label"></strong>
+                <p id="comentario-text" style="margin-top: 10px;"></p>
+                <button class="btn-option" onclick="nextQuestion()" style="background: var(--accent-blue); text-align: center; border:none; margin-top:15px">Próxima Questão</button>
+            </div>
         </div>
-        <p style="text-align:center; font-size: 0.8rem; color: #94a3b8; margin-top: 20px;">Estudo Ativo: Acerte ou aprenda com o erro.</p>
-        <button class="btn" style="background: #e2e8f0; color: #475569;" onclick="showPage('page-materias')">Sair da Matéria</button>
     </div>
 
 </div>
 
-<div class="timer-bar">
-    <div style="text-align: center;">
-        <small style="display:block; font-size: 0.6rem; opacity: 0.7;">FOCO POMODORO</small>
-        <span id="display-time">25:00</span>
-    </div>
-    <button onclick="toggleTimer()" id="play-btn" style="background: var(--primary); border:none; color:white; width:50px; height:50px; border-radius:50%; font-size:1.2rem;">▶️</button>
+<div class="pomodoro-dock">
+    <div class="timer-text" id="clock">25:00</div>
+    <button id="playBtn" onclick="toggleClock()" style="background: var(--primary-red); border:none; color:white; padding:8px 15px; border-radius:20px; font-weight:bold; cursor:pointer">FOCO</button>
 </div>
 
 <script>
-    let stats = JSON.parse(localStorage.getItem('aprovacao_stats')) || { acertos: 0, erros: 0 };
-    let timer;
-    let seconds = 25 * 60;
-    let running = false;
+    let stats = { acertos: 0, erros: 0 };
+    let currentSubject = "";
+    let qIndex = 0;
 
-    const questoesDb = {
-        'Português': [
-            { q: "Na frase 'Vende-se casas', a concordância está correta segundo a norma culta?", r: false, b: "FGV" },
-            { q: "O termo 'porque' (junto e sem acento) é utilizado para respostas e causas?", r: true, b: "FCC" }
+    const db = {
+        "Magistratura / Jurídica": ["Constitucional", "Penal", "Processo Civil"],
+        "Segurança Pública": ["Penal", "Português", "Informática", "Leis Especiais"],
+        "Gestão e Fiscal": ["Contabilidade", "Administrativo", "Tributário"]
+    };
+
+    const questoes = {
+        "Penal": [
+            {
+                banca: "FGV",
+                texto: "A legítima defesa putativa exclui a culpabilidade se o erro for invencível?",
+                resp: true,
+                comentario: "Exatamente! Segundo o Art. 20, §1º do CP, se o erro nas discriminantes putativas é plenamente justificado pelas circunstâncias (invencível), exclui-se tanto o dolo quanto a culpa, isentando de pena."
+            },
+            {
+                banca: "CEBRASPE",
+                texto: "O peculato culposo admite a extinção da punibilidade se o dano for reparado antes da sentença irrecorrível?",
+                resp: true,
+                comentario: "Correto. No peculato culposo, a reparação do dano que precede a sentença irrecorrível extingue a punibilidade. Se for posterior, reduz a pena pela metade."
+            }
         ],
-        'Direito Penal': [
-            { q: "O crime de peculato exige que o autor seja funcionário público?", r: true, b: "CEBRASPE" },
-            { q: "A legítima defesa exclui a ilicitude do fato?", r: true, b: "VUNESP" }
-        ],
-        'Direito Admin.': [
-            { q: "A administração direta é composta pelas autarquias e fundações?", r: false, b: "CEBRASPE" }
+        "Constitucional": [
+            {
+                banca: "FCC",
+                texto: "É competência privativa da União legislar sobre Direito Civil e Comercial?",
+                resp: true,
+                comentario: "Art. 22, I da CF/88. Compete privativamente à União legislar sobre direito civil, comercial, penal, processual, eleitoral, agrário, marítimo, aeronáutico, espacial e do trabalho."
+            }
         ]
     };
 
@@ -176,63 +243,73 @@
         document.getElementById(id).classList.add('active');
     }
 
-    function selectCargo(cargo, materias) {
-        document.getElementById('titulo-cargo').innerText = `Carreira: ${cargo}`;
-        const container = document.getElementById('lista-materias');
-        container.innerHTML = "";
-        materias.forEach(m => {
-            container.innerHTML += `
-                <div class="subject-item" onclick="startStudy('${m}')">
-                    <strong>${m}</strong>
-                    <span style="color:var(--primary)">✏️ Iniciar</span>
-                </div>`;
+    function loadMaterias(area) {
+        document.getElementById('cargo-title').innerText = area;
+        const list = document.getElementById('lista-materias');
+        list.innerHTML = "";
+        db[area].forEach(m => {
+            list.innerHTML += `<div class="card-selection" onclick="startQuestions('${m}')"><h3>${m}</h3></div>`;
         });
         showPage('page-materias');
     }
 
-    function startStudy(materia) {
-        const qList = questoesDb[materia] || [{q: "Materia em revisão. Você fez o resumo de hoje?", r: true, b: "REVISÃO"}];
-        const randomQ = qList[Math.floor(Math.random() * qList.length)];
-        document.getElementById('pergunta').innerText = randomQ.q;
-        document.getElementById('banca-label').innerText = `BANCA ${randomQ.b}`;
-        showPage('page-estudo');
+    function startQuestions(materia) {
+        currentSubject = materia;
+        qIndex = 0;
+        nextQuestion();
+        showPage('page-questoes');
     }
 
-    function answer(userAns) {
-        // Lógica simples: apenas para registro de estudo ativo
-        if(userAns) stats.acertos++; else stats.erros++;
-        localStorage.setItem('aprovacao_stats', JSON.stringify(stats));
-        updateNav();
-        alert("Resposta registrada! Continue praticando.");
-        showPage('page-materias');
+    function nextQuestion() {
+        const qset = questoes[currentSubject] || [{banca: "SISTEMA", texto: "Parabéns! Você revisou este tópico. Vamos para a próxima?", resp: true, comentario: "O importante é a constância!"}];
+        const q = qset[qIndex % qset.length];
+        
+        document.getElementById('meta-info').innerText = `BANCA ${q.banca} • ${currentSubject}`;
+        document.getElementById('enunciado').innerText = q.texto;
+        document.getElementById('feedback-area').style.display = "none";
+        document.getElementById('comentario-text').innerText = q.comentario;
+        qIndex++;
     }
 
-    function updateNav() {
-        const total = stats.acertos + stats.erros;
-        const perc = total > 0 ? Math.round((stats.acertos / total) * 100) : 0;
-        document.getElementById('stats-nav').innerText = `🏆 Nível: ${perc}% de acertos (${total} questões feitas)`;
+    function checkAnswer(userChoice) {
+        const qset = questoes[currentSubject] || [ {resp: true} ];
+        const correct = qset[(qIndex-1) % qset.length].resp;
+        const feedback = document.getElementById('feedback-area');
+        const label = document.getElementById('result-label');
+
+        feedback.style.display = "block";
+        if(userChoice === correct) {
+            label.innerText = "✓ EXCELENTE!";
+            feedback.className = "feedback correct";
+        } else {
+            label.innerText = "✕ FOQUE NO ERRO";
+            feedback.className = "feedback wrong";
+        }
     }
 
-    function toggleTimer() {
-        const btn = document.getElementById('play-btn');
-        if(running) {
+    // Timer Logic
+    let timer;
+    let tLeft = 25 * 60;
+    let tRunning = false;
+
+    function toggleClock() {
+        const btn = document.getElementById('playBtn');
+        if(tRunning) {
             clearInterval(timer);
-            btn.innerText = "▶️";
+            btn.innerText = "FOCO";
         } else {
             timer = setInterval(() => {
-                seconds--;
-                let m = Math.floor(seconds / 60);
-                let s = seconds % 60;
-                document.getElementById('display-time').innerText = `${m}:${s < 10 ? '0'+s : s}`;
-                if(seconds <= 0) { clearInterval(timer); alert("Ciclo finalizado!"); }
+                tLeft--;
+                let m = Math.floor(tLeft / 60);
+                let s = tLeft % 60;
+                document.getElementById('clock').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+                if(tLeft <= 0) clearInterval(timer);
             }, 1000);
-            btn.innerText = "⏸️";
+            btn.innerText = "PAUSAR";
         }
-        running = !running;
+        tRunning = !tRunning;
     }
 
-    window.onload = updateNav;
 </script>
-
 </body>
 </html>
