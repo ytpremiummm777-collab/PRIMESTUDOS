@@ -2,271 +2,236 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Concurseiro Ultra</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aprovação Pro - Plataforma de Estudos</title>
+    
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3534/3534139.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AprovaçãoPro">
+
     <style>
         :root {
-            --primary: #818cf8;
-            --bg-dark: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --text-main: #f8fafc;
+            --primary: #2563eb;
+            --secondary: #0f172a;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #f1f5f9;
+            --text: #1e293b;
         }
 
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: radial-gradient(circle at top left, #1e1b4b, #0f172a);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            padding-bottom: 80px; /* Espaço para o timer fixo */
         }
-
-        .container { max-width: 1200px; margin: 0 auto; }
-
-        /* Header Estilizado */
-        header {
-            display: flex;
-            justify-content: space-between;
+        
+        /* Navegação Superior Estilo App */
+        nav { 
+            background: var(--secondary); 
+            color: white; 
+            padding: 1.2rem; 
+            display: flex; 
+            flex-direction: column;
             align-items: center;
-            padding: 20px;
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
-        .cargo-badge {
-            background: var(--primary);
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
+        .logo { font-weight: 800; font-size: 1.3rem; letter-spacing: -1px; margin-bottom: 5px; }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 1.5rem; }
+
+        /* Telas */
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Cards de Seleção */
+        .grid-cargos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .card-cargo { 
+            background: white; border-radius: 16px; padding: 1.5rem; 
+            text-align: center; cursor: pointer; border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .card-cargo h3 { margin: 10px 0 5px; font-size: 1rem; }
+        .card-cargo p { font-size: 0.75rem; color: #64748b; margin: 0; }
+
+        /* Lista de Matérias */
+        .subject-item {
+            background: white; margin-bottom: 12px; padding: 1.2rem; border-radius: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
-        /* Grid Principal */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
+        /* Questões */
+        .questoes-box { 
+            background: white; padding: 1.5rem; border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
         }
-
-        .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            padding: 25px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        .banca-tag { background: #fee2e2; color: #b91c1c; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+        
+        .btn { 
+            padding: 12px 24px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer;
+            width: 100%; margin-top: 10px; font-size: 1rem;
         }
+        .btn-check { background: var(--success); color: white; }
+        .btn-wrong { background: var(--danger); color: white; }
 
-        /* Simulado e Questões */
-        .stats-group { display: flex; gap: 15px; margin-top: 15px; }
-        .stat-box {
-            flex: 1;
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            background: rgba(0,0,0,0.2);
+        /* Timer Flutuante */
+        .timer-bar {
+            position: fixed; bottom: 0; width: 100%; background: var(--secondary);
+            color: white; padding: 15px 0; display: flex; justify-content: space-around;
+            align-items: center; border-radius: 20px 20px 0 0;
         }
-
-        input, select, textarea {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid #334155;
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            width: 100%;
-            margin-top: 5px;
-        }
-
-        /* Pomodoro Minimalista */
-        #timer {
-            font-size: 5rem;
-            font-weight: 900;
-            text-align: center;
-            font-variant-numeric: tabular-nums;
-            background: linear-gradient(to bottom, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .btn {
-            padding: 12px 20px;
-            border-radius: 10px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .btn:active { transform: scale(0.95); }
-        .btn-primary { background: var(--primary); color: white; width: 100%; }
-
-        .progress-bar {
-            height: 10px;
-            background: #334155;
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 15px 0;
-        }
-        #progress-fill { height: 100%; background: var(--accent-green); width: 0%; transition: 1s; }
-
+        #display-time { font-family: 'Courier New', monospace; font-size: 1.5rem; font-weight: bold; }
     </style>
 </head>
 <body>
 
+<nav>
+    <div class="logo" onclick="showPage('page-cargos')">🛡️ APROVAÇÃO PRO</div>
+    <div id="stats-nav" style="font-size: 0.8rem; opacity: 0.8;">Carregando desempenho...</div>
+</nav>
+
 <div class="container">
-    <header>
-        <div>
-            <h1 style="margin:0; font-size: 1.5rem;">Foco Total ⚡</h1>
-            <span id="displayCargo" class="cargo-badge" onclick="editCargo()">Definir Cargo</span>
-        </div>
-        <div style="text-align: right;">
-            <div id="data-atual"></div>
-        </div>
-    </header>
-
-    <div class="grid">
-        <div class="card">
-            <h3 style="margin-top:0">Pomodoro</h3>
-            <div id="timer">25:00</div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn btn-primary" id="btnStart" onclick="toggleTimer()">Iniciar</button>
-                <button class="btn" style="background:#475569; color:white;" onclick="resetTimer()">Reset</button>
+    
+    <div id="page-cargos" class="page active">
+        <h2 style="font-size: 1.2rem;">Escolha sua carreira:</h2>
+        <div class="grid-cargos">
+            <div class="card-cargo" onclick="selectCargo('Policial', ['Português', 'Direito Penal', 'Informática'])">
+                <span style="font-size: 2rem;">👮</span>
+                <h3>Policial</h3>
+                <p>PF, PRF, Civil</p>
             </div>
-            <select id="tempoConfig" onchange="updateTempoPreset()" style="margin-top:15px">
-                <option value="25">Foco (25 min)</option>
-                <option value="50">Foco Profundo (50 min)</option>
-                <option value="5">Pausa Curta (5 min)</option>
-            </select>
-        </div>
-
-        <div class="card">
-            <h3 style="margin-top:0">Desempenho em Questões</h3>
-            <label>Banca Examinadora:</label>
-            <select id="bancaSelect" onchange="saveData()">
-                <option>Cebraspe</option>
-                <option>FGV</option>
-                <option>FCC</option>
-                <option>Vunesp</option>
-            </select>
-            
-            <div class="stats-group">
-                <div class="stat-box" style="border-bottom: 3px solid var(--accent-green)">
-                    <small>Acertos</small>
-                    <div id="acertos" contenteditable="true" oninput="calcPercent()">0</div>
-                </div>
-                <div class="stat-box" style="border-bottom: 3px solid var(--accent-red)">
-                    <small>Erros</small>
-                    <div id="erros" contenteditable="true" oninput="calcPercent()">0</div>
-                </div>
-                <div class="stat-box" style="border-bottom: 3px solid var(--primary)">
-                    <small>% Aproveitamento</small>
-                    <div id="percent">0%</div>
-                </div>
+            <div class="card-cargo" onclick="selectCargo('Administrativo', ['Português', 'Direito Admin.', 'RLM'])">
+                <span style="font-size: 2rem;">📂</span>
+                <h3>Adm.</h3>
+                <p>Inss, Prefeituras</p>
             </div>
-            <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 10px;">Dica: Analise o erro para não repetir o padrão.</p>
-        </div>
-
-        <div class="card">
-            <h3 style="margin-top:0">Meta do Dia</h3>
-            <div class="progress-bar"><div id="progress-fill"></div></div>
-            <textarea id="metas" placeholder="1. Revisar Contratos&#10;2. 40 questões de RLM..." oninput="saveData()"></textarea>
+            <div class="card-cargo" onclick="selectCargo('Tribunais', ['Constitucional', 'Português', 'Civil'])">
+                <span style="font-size: 2rem;">⚖️</span>
+                <h3>Tribunais</h3>
+                <p>TJ, TRT, TRE</p>
+            </div>
+            <div class="card-cargo" onclick="selectCargo('Fiscal', ['Contabilidade', 'Tributário', 'RLM'])">
+                <span style="font-size: 2rem;">💰</span>
+                <h3>Fiscal</h3>
+                <p>Receita, Sefaz</p>
+            </div>
         </div>
     </div>
+
+    <div id="page-materias" class="page">
+        <h2 id="titulo-cargo" style="font-size: 1.2rem;">Matérias</h2>
+        <div id="lista-materias"></div>
+        <button class="btn" style="background: #e2e8f0; color: #475569;" onclick="showPage('page-cargos')">Voltar ao Início</button>
+    </div>
+
+    <div id="page-estudo" class="page">
+        <div class="questoes-box">
+            <span class="banca-tag" id="banca-label">BANCA CEBRASPE</span>
+            <p id="pergunta" style="font-weight: 500; line-height: 1.5; margin: 15px 0;">Carregando questão...</p>
+            <button class="btn btn-check" onclick="answer(true)">CORRETO</button>
+            <button class="btn btn-wrong" onclick="answer(false)">ERRADO</button>
+        </div>
+        <p style="text-align:center; font-size: 0.8rem; color: #94a3b8; margin-top: 20px;">Estudo Ativo: Acerte ou aprenda com o erro.</p>
+        <button class="btn" style="background: #e2e8f0; color: #475569;" onclick="showPage('page-materias')">Sair da Matéria</button>
+    </div>
+
+</div>
+
+<div class="timer-bar">
+    <div style="text-align: center;">
+        <small style="display:block; font-size: 0.6rem; opacity: 0.7;">FOCO POMODORO</small>
+        <span id="display-time">25:00</span>
+    </div>
+    <button onclick="toggleTimer()" id="play-btn" style="background: var(--primary); border:none; color:white; width:50px; height:50px; border-radius:50%; font-size:1.2rem;">▶️</button>
 </div>
 
 <script>
+    let stats = JSON.parse(localStorage.getItem('aprovacao_stats')) || { acertos: 0, erros: 0 };
     let timer;
-    let timeLeft = 25 * 60;
-    let isRunning = false;
+    let seconds = 25 * 60;
+    let running = false;
 
-    // Inicialização
-    window.onload = () => {
-        document.getElementById('data-atual').textContent = new Date().toLocaleDateString('pt-BR', {weekday: 'long', day: 'numeric', month: 'long'});
-        loadData();
+    const questoesDb = {
+        'Português': [
+            { q: "Na frase 'Vende-se casas', a concordância está correta segundo a norma culta?", r: false, b: "FGV" },
+            { q: "O termo 'porque' (junto e sem acento) é utilizado para respostas e causas?", r: true, b: "FCC" }
+        ],
+        'Direito Penal': [
+            { q: "O crime de peculato exige que o autor seja funcionário público?", r: true, b: "CEBRASPE" },
+            { q: "A legítima defesa exclui a ilicitude do fato?", r: true, b: "VUNESP" }
+        ],
+        'Direito Admin.': [
+            { q: "A administração direta é composta pelas autarquias e fundações?", r: false, b: "CEBRASPE" }
+        ]
     };
 
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function selectCargo(cargo, materias) {
+        document.getElementById('titulo-cargo').innerText = `Carreira: ${cargo}`;
+        const container = document.getElementById('lista-materias');
+        container.innerHTML = "";
+        materias.forEach(m => {
+            container.innerHTML += `
+                <div class="subject-item" onclick="startStudy('${m}')">
+                    <strong>${m}</strong>
+                    <span style="color:var(--primary)">✏️ Iniciar</span>
+                </div>`;
+        });
+        showPage('page-materias');
+    }
+
+    function startStudy(materia) {
+        const qList = questoesDb[materia] || [{q: "Materia em revisão. Você fez o resumo de hoje?", r: true, b: "REVISÃO"}];
+        const randomQ = qList[Math.floor(Math.random() * qList.length)];
+        document.getElementById('pergunta').innerText = randomQ.q;
+        document.getElementById('banca-label').innerText = `BANCA ${randomQ.b}`;
+        showPage('page-estudo');
+    }
+
+    function answer(userAns) {
+        // Lógica simples: apenas para registro de estudo ativo
+        if(userAns) stats.acertos++; else stats.erros++;
+        localStorage.setItem('aprovacao_stats', JSON.stringify(stats));
+        updateNav();
+        alert("Resposta registrada! Continue praticando.");
+        showPage('page-materias');
+    }
+
+    function updateNav() {
+        const total = stats.acertos + stats.erros;
+        const perc = total > 0 ? Math.round((stats.acertos / total) * 100) : 0;
+        document.getElementById('stats-nav').innerText = `🏆 Nível: ${perc}% de acertos (${total} questões feitas)`;
+    }
+
     function toggleTimer() {
-        const btn = document.getElementById('btnStart');
-        if (isRunning) {
+        const btn = document.getElementById('play-btn');
+        if(running) {
             clearInterval(timer);
-            btn.textContent = "Continuar";
-            btn.style.background = "var(--primary)";
+            btn.innerText = "▶️";
         } else {
-            timer = setInterval(updateTimer, 1000);
-            btn.textContent = "Pausar";
-            btn.style.background = "#f59e0b";
+            timer = setInterval(() => {
+                seconds--;
+                let m = Math.floor(seconds / 60);
+                let s = seconds % 60;
+                document.getElementById('display-time').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+                if(seconds <= 0) { clearInterval(timer); alert("Ciclo finalizado!"); }
+            }, 1000);
+            btn.innerText = "⏸️";
         }
-        isRunning = !isRunning;
+        running = !running;
     }
 
-    function updateTimer() {
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            alert("Tempo esgotado!");
-            return;
-        }
-        timeLeft--;
-        const m = Math.floor(timeLeft / 60);
-        const s = timeLeft % 60;
-        document.getElementById('timer').textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    }
-
-    function resetTimer() {
-        clearInterval(timer);
-        isRunning = false;
-        timeLeft = document.getElementById('tempoConfig').value * 60;
-        document.getElementById('timer').textContent = `${document.getElementById('tempoConfig').value}:00`;
-        document.getElementById('btnStart').textContent = "Iniciar";
-    }
-
-    function updateTempoPreset() {
-        resetTimer();
-    }
-
-    function editCargo() {
-        const novoCargo = prompt("Para qual cargo você está estudando?");
-        if(novoCargo) {
-            document.getElementById('displayCargo').textContent = novoCargo;
-            saveData();
-        }
-    }
-
-    function calcPercent() {
-        const a = parseInt(document.getElementById('acertos').textContent) || 0;
-        const e = parseInt(document.getElementById('erros').textContent) || 0;
-        const total = a + e;
-        const p = total > 0 ? Math.round((a / total) * 100) : 0;
-        document.getElementById('percent').textContent = p + "%";
-        document.getElementById('progress-fill').style.width = p + "%";
-        saveData();
-    }
-
-    function saveData() {
-        const data = {
-            cargo: document.getElementById('displayCargo').textContent,
-            acertos: document.getElementById('acertos').textContent,
-            erros: document.getElementById('erros').textContent,
-            metas: document.getElementById('metas').value,
-            banca: document.getElementById('bancaSelect').value
-        };
-        localStorage.setItem('concurseiro_pro_v3', JSON.stringify(data));
-    }
-
-    function loadData() {
-        const saved = JSON.parse(localStorage.getItem('concurseiro_pro_v3'));
-        if (saved) {
-            document.getElementById('displayCargo').textContent = saved.cargo;
-            document.getElementById('acertos').textContent = saved.acertos;
-            document.getElementById('erros').textContent = saved.erros;
-            document.getElementById('metas').value = saved.metas;
-            document.getElementById('bancaSelect').value = saved.banca;
-            calcPercent();
-        }
-    }
+    window.onload = updateNav;
 </script>
 
 </body>
